@@ -41,7 +41,7 @@ namespace DatingApp.API.Data
             }
         }
 
-        public async Task<User> Resister(User user, string password)
+        public async Task<User> Register(User user, string password)
         {
             byte[] passwordHash, passwordSalt;
             CreatePasswordHash(password, out passwordHash, out passwordSalt);
