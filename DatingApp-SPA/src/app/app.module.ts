@@ -24,7 +24,7 @@ import { appRoutes } from './routes';
       RegisterComponent,
       MemberListComponent,
       ListsComponent,
-      MessagesComponent
+      MessagesComponent,
    ],
    imports: [
       BrowserModule,
