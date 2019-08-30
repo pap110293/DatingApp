@@ -53,8 +53,6 @@ namespace DatingApp.API.Migrations
 
                     b.Property<string>("Gender");
 
-                    b.Property<string>("Intersts");
-
                     b.Property<string>("Introduction");
 
                     b.Property<string>("KnownAs");
@@ -68,6 +66,8 @@ namespace DatingApp.API.Migrations
                     b.Property<byte[]>("PasswordSalt");
 
                     b.Property<string>("Username");
+
+                    b.Property<string>("interests");
 
                     b.HasKey("Id");
 

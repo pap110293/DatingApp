@@ -23,6 +23,7 @@ export class NavComponent implements OnInit {
     this.authService.login(this.modelLogin).subscribe(
       () => {
         this.alertify.success('logged in successfully');
+        this.router.navigate(['/members']);
       },
       error => {
         this.alertify.error(error);
@@ -38,6 +39,6 @@ export class NavComponent implements OnInit {
     this.authService.logout();
     this.alertify.message('logged out');
     this.modelLogin = {};
-    this.router.navigate(['/home']);
+    this.router.navigate(['/']);
   }
 }

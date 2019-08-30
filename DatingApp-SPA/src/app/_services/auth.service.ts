@@ -21,7 +21,7 @@ export class AuthService {
         const user = response;
         if (user) {
           const rawToken = user.token;
-          localStorage.setItem('token', rawToken);
+          localStorage.setItem(environment.tokenLocalStoreKey, rawToken);
           this.decodeToken = this.jwtHelper.decodeToken(rawToken);
         }
       })
@@ -34,11 +34,11 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem('token');
+    localStorage.removeItem(environment.tokenLocalStoreKey);
   }
 
   isLoggedIn() {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem(environment.tokenLocalStoreKey);
     return !this.jwtHelper.isTokenExpired(token);
   }
 }

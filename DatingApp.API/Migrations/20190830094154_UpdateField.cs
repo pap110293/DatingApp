@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DatingApp.API.Migrations
 {
-    public partial class ExtendedUserClass : Migration
+    public partial class UpdateField : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -35,11 +35,6 @@ namespace DatingApp.API.Migrations
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
-                name: "Intersts",
-                table: "Users",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
                 name: "Introduction",
                 table: "Users",
                 nullable: true);
@@ -57,6 +52,11 @@ namespace DatingApp.API.Migrations
 
             migrationBuilder.AddColumn<string>(
                 name: "LookingFor",
+                table: "Users",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "interests",
                 table: "Users",
                 nullable: true);
 
@@ -115,10 +115,6 @@ namespace DatingApp.API.Migrations
                 table: "Users");
 
             migrationBuilder.DropColumn(
-                name: "Intersts",
-                table: "Users");
-
-            migrationBuilder.DropColumn(
                 name: "Introduction",
                 table: "Users");
 
@@ -132,6 +128,10 @@ namespace DatingApp.API.Migrations
 
             migrationBuilder.DropColumn(
                 name: "LookingFor",
+                table: "Users");
+
+            migrationBuilder.DropColumn(
+                name: "interests",
                 table: "Users");
         }
     }
