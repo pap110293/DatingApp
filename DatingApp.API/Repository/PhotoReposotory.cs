@@ -1,0 +1,18 @@
+using System.Threading.Tasks;
+using DatingApp.API.Data;
+using DatingApp.API.Models;
+
+namespace DatingApp.API.Repository
+{
+    public class PhotoReposotory : BaseRepository<Photo>, IPhotoRepository
+    {
+        public PhotoReposotory(DataContext context) : base(context)
+        {
+        }
+
+        public async Task<Photo> GetPhoto(long id)
+        {
+            return await Get(p => p.Id == id);
+        }
+    }
+}

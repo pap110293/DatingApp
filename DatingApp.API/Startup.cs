@@ -38,6 +38,9 @@ namespace DatingApp.API
             // Adds cross-origin resource sharing
             services.AddCors();
 
+            // Configuation mapping
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
+
             // Auto Mapper
             services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
 

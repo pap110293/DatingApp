@@ -32,9 +32,9 @@ namespace DatingApp.API.Repository
             return await _dbSet.Include(i => i.Photos).Where(filter).ToListAsync();
         }
 
-        public Task<User> GetUser(long id)
+        public async Task<User> GetUser(long id)
         {
-            return Get(u => u.Id == id);
+            return await Get(u => u.Id == id);
         }
     }
 }
