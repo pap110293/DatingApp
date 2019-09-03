@@ -24,6 +24,7 @@ namespace DatingApp.API.Controllers
             _mapper = mapper;
         }
 
+        // GET: api/users
         [HttpGet]
         public async Task<IActionResult> GetUsers(){
             var users = await _userRepo.GetAll();
@@ -33,6 +34,7 @@ namespace DatingApp.API.Controllers
             return Ok(usersToReturn);
         }
 
+        // GET: api/users/{id}
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> GetUser(int id){
@@ -45,6 +47,7 @@ namespace DatingApp.API.Controllers
             return NotFound();
         }
 
+        // PUT: api/users/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, UserForUpdateDto userForUpdate){
             if(id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))

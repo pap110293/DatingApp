@@ -36,22 +36,47 @@ namespace DatingApp.API.Controllers
             _photoRepo = photoRepo;
             Account acc = new Account(_cloudinaryConfig.Value.CloudName, _cloudinaryConfig.Value.ApiKey, _cloudinaryConfig.Value.ApiSecret);
             _cloudinary = new Cloudinary(acc);
-            // _cloudinary = new Cloudinary("CLOUDINARY_URL=cloudinary://683459633835173:3nz_KOUX4ulym7MBLX-fwBANBDU@pap1102");
         }
 
-        [HttpGet("{id}", Name = "GetPhoto")]
-        public async Task<IActionResult> GetPhoto(long id)
+        private bool CheckUser(long userId)
         {
+            var currentUserId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            return userId == currentUserId;
+        }
+
+        // GET: api/users/{userId}/photos/{id}
+        [HttpGet("{id}", Name = nameof(GetPhoto))]
+        public async Task<IActionResult> GetPhoto(long userId, long id)
+        {
+            if (!CheckUser(userId))
+            {
+                return Unauthorized();
+            }
+
             var photoFromRepo = await _photoRepo.GetPhoto(id);
             var photo = _mapper.Map<PhotoForReturnDto>(photoFromRepo);
             return Ok(photo);
         }
 
+        
+        // GET: api/users/{userId}/photos
+        [HttpGet]
+        public async Task<IActionResult> GetPhotos(long userId)
+        {
+            if (!CheckUser(userId))
+            {
+                return Unauthorized();
+            }
+
+            var userFromRepo = await _userRepo.GetUser(userId);
+            return Ok(userFromRepo.Photos.Select(p => _mapper.Map<PhotoForReturnDto>(p)));
+        }
+
+        // POST: api/users/{userId}/photos
         [HttpPost]
         public async Task<IActionResult> AddPhotoForUser(long userId, [FromForm]PhotoForCreationDto photoForCreationDto)
         {
-            var currentUserId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            if (userId != currentUserId)
+            if (!CheckUser(userId))
             {
                 return Unauthorized();
             }
@@ -91,7 +116,7 @@ namespace DatingApp.API.Controllers
             if (await _userRepo.SaveAll())
             {
                 var photoForReturn = _mapper.Map<PhotoForReturnDto>(photo);
-                return CreatedAtAction("GetPhoto", new {id = photo.Id}, photo);
+                return CreatedAtAction(nameof(GetPhoto), new { id = photo.Id }, photoForReturn);
             }
 
             return BadRequest("Cound not add the photo");

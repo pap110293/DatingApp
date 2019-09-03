@@ -32,7 +32,7 @@ namespace DatingApp.API
             // Regist database context 
             services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            services.AddMvc(o => o.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             // Adds cross-origin resource sharing
