@@ -49,6 +49,7 @@ namespace DatingApp.API
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IPhotoRepository, PhotoReposotory>();
 
             // Authentication
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -36,20 +36,22 @@ namespace DatingApp.API.Controllers
             _photoRepo = photoRepo;
             Account acc = new Account(_cloudinaryConfig.Value.CloudName, _cloudinaryConfig.Value.ApiKey, _cloudinaryConfig.Value.ApiSecret);
             _cloudinary = new Cloudinary(acc);
+            // _cloudinary = new Cloudinary("CLOUDINARY_URL=cloudinary://683459633835173:3nz_KOUX4ulym7MBLX-fwBANBDU@pap1102");
         }
 
         [HttpGet("{id}", Name = "GetPhoto")]
         public async Task<IActionResult> GetPhoto(long id)
         {
-            var photoFromRepo = _photoRepo.GetPhoto(id);
+            var photoFromRepo = await _photoRepo.GetPhoto(id);
             var photo = _mapper.Map<PhotoForReturnDto>(photoFromRepo);
             return Ok(photo);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPhotoForUser(long userId, PhotoForCreationDto photoForCreationDto)
+        public async Task<IActionResult> AddPhotoForUser(long userId, [FromForm]PhotoForCreationDto photoForCreationDto)
         {
-            if (userId != long.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            var currentUserId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            if (userId != currentUserId)
             {
                 return Unauthorized();
             }
@@ -66,8 +68,8 @@ namespace DatingApp.API.Controllers
                 {
                     var uploadParams = new ImageUploadParams
                     {
-                        File = new FileDescription(file.Name, stream),
-                        Transformation = new Transformation().Width(500).Height(500).Crop("fill").Gravity("face")
+                        File = new FileDescription(file.FileName, stream),
+                        Transformation = new Transformation().Width(500).Height(500).Crop("fill").Gravity("faces")
                     };
 
                     uploadResult = _cloudinary.Upload(uploadParams);
@@ -88,7 +90,8 @@ namespace DatingApp.API.Controllers
 
             if (await _userRepo.SaveAll())
             {
-                return Ok();
+                var photoForReturn = _mapper.Map<PhotoForReturnDto>(photo);
+                return CreatedAtAction("GetPhoto", new {id = photo.Id}, photo);
             }
 
             return BadRequest("Cound not add the photo");
