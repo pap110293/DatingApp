@@ -36,9 +36,9 @@ export class NavComponent implements OnInit {
   }
 
   logout() {
+    this.modelLogin = {};
     this.authService.logout();
     this.alertify.message('logged out');
-    this.modelLogin = {};
     this.router.navigate(['/']);
   }
 }

@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using DatingApp.API.DTOs;
 using DatingApp.API.Models;
 using DatingApp.API.Repository;
@@ -18,11 +19,13 @@ namespace DatingApp.API.Controllers
     {
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
+        private readonly IMapper _mapper;
 
-        public AuthController(IAuthRepository repo, IConfiguration config)
+        public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper)
         {
             _repo = repo;
             _config = config;
+            _mapper = mapper;
         }
 
         [HttpPost("register")]
@@ -46,22 +49,24 @@ namespace DatingApp.API.Controllers
 
             return StatusCode(201);
         }
-        
+
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
-            var user = await _repo.Login(userForLoginDto.Username, userForLoginDto.Password);
-            if(user == null)
+            var userFromRepo = await _repo.Login(userForLoginDto.Username, userForLoginDto.Password);
+            if (userFromRepo == null)
                 return Unauthorized();
 
-            return Ok(new {
-                token = CreateToken(user)
+            var user = _mapper.Map<UserForListDto>(userFromRepo);
+
+            return Ok(new { 
+                token = CreateToken(userFromRepo), user 
             });
         }
 
         private string CreateToken(User user)
         {
-            var claims = new []{
+            var claims = new[]{
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username)
             };
@@ -71,7 +76,8 @@ namespace DatingApp.API.Controllers
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-            var tokenDescriptor = new SecurityTokenDescriptor(){
+            var tokenDescriptor = new SecurityTokenDescriptor()
+            {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.Now.AddDays(1),
                 SigningCredentials = creds

@@ -42,17 +42,19 @@ export class MemberEditComponent implements OnInit {
 
   updateUser() {
     const userId = this.authService.decodeToken.nameid;
-    this.userService
-      .updateUser(userId, this.user)
-      .subscribe(
-        (data: User) => {
-          this.editForm.reset();
-          this.alertify.success('Your profile updated successfully');
-          this.router.navigate(['/members/' + userId]);
-        },
-        error => {
-          this.alertify.error(error);
-        }
-      );
+    this.userService.updateUser(userId, this.user).subscribe(
+      (data: User) => {
+        this.editForm.reset();
+        this.alertify.success('Your profile updated successfully');
+        this.router.navigate(['/members/' + userId]);
+      },
+      error => {
+        this.alertify.error(error);
+      }
+    );
+  }
+
+  updateMainPhoto(url: string) {
+    this.user.photoUrl = url;
   }
 }

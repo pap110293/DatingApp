@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:5000/api/',
-  tokenLocalStoreKey: 'token'
+  tokenLocalStoreKey: 'token',
+  currentUserLocalStoreKey: 'user'
 };
 
 /*

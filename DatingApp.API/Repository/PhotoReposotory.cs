@@ -10,6 +10,11 @@ namespace DatingApp.API.Repository
         {
         }
 
+        public async Task<Photo> GetMainPhoto(long userId)
+        {
+            return await Get(p => p.UserId == userId && p.IsMain);
+        }
+
         public async Task<Photo> GetPhoto(long id)
         {
             return await Get(p => p.Id == id);

@@ -2,7 +2,7 @@
     <div class="col-lg-3 col-md-4 col-ms-6 mb-3" *ngFor="let photo of photos">
         <img src="{{photo.url}}" class="img-thumbnail p-1" alt="">
         <div class="text-center">
-            <button type="button" class="btn btn-md btn-ms btn-success mr-2" [disabled]="photo.isMain">Main</button>
+            <button type="button" class="btn btn-md btn-ms btn-success mr-2" [disabled]="photo.isMain" (click)="setMainPhoto(photo)">Main</button>
             <button type="button" class="btn btn-md btn-ms btn-danger"><i class="fa fa-trash-o"></i></button>
 
         </div>
@@ -10,7 +10,7 @@
 </div>
 
 <div class="row mt-5">
-    <div class="col-md-2">
+    <div class="col-md-3">
         <h3>Add Photos</h3>
 
         <div ng2FileDrop [ngClass]="{'nv-file-over': hasBaseDropZoneOver}" (fileOver)="fileOverBase($event)" [uploader]="uploader" class="card bg-faded p-3 text-center mb-3 my-drop-zone">
@@ -22,7 +22,7 @@
         <input type="file" ng2FileSelect [uploader]="uploader" />
     </div>
 
-    <div class="col-md-10" style="margin-bottom: 40px">
+    <div class="col-md-9" style="margin-bottom: 40px" *ngIf="uploader?.queue?.length">
         <table class="table">
             <thead>
                 <tr class="text-center">
