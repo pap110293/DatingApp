@@ -7,5 +7,6 @@ namespace DatingApp.API.Repository
     {
         Task<Photo> GetPhoto(long id);
         Task<Photo> GetMainPhoto(long userId);
+        Task<bool> Any(long userId, long id);
     }
 }

@@ -14,5 +14,6 @@ namespace DatingApp.API.Repository
          Task<IEnumerable<T>> GetAll();
          Task<T> Get(Expression<Func<T, bool>> filter);
          Task<IEnumerable<T>> Gets(Expression<Func<T, bool>> filter);
+         Task<bool> Any(Expression<Func<T, bool>> filter);
     }
 }

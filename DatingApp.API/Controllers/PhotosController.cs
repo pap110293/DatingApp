@@ -38,7 +38,7 @@ namespace DatingApp.API.Controllers
             _cloudinary = new Cloudinary(acc);
         }
 
-        private bool CheckUser(long userId)
+        private bool CheckUserId(long userId)
         {
             var currentUserId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             return userId == currentUserId;
@@ -48,7 +48,7 @@ namespace DatingApp.API.Controllers
         [HttpGet("{id}", Name = nameof(GetPhoto))]
         public async Task<IActionResult> GetPhoto(long userId, long id)
         {
-            if (!CheckUser(userId))
+            if (!CheckUserId(userId))
             {
                 return Unauthorized();
             }
@@ -63,7 +63,7 @@ namespace DatingApp.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPhotos(long userId)
         {
-            if (!CheckUser(userId))
+            if (!CheckUserId(userId))
             {
                 return Unauthorized();
             }
@@ -76,15 +76,13 @@ namespace DatingApp.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddPhotoForUser(long userId, [FromForm]PhotoForCreationDto photoForCreationDto)
         {
-            if (!CheckUser(userId))
+            if (!CheckUserId(userId))
             {
                 return Unauthorized();
             }
 
             var userFromRepo = await _userRepo.GetUser(userId);
-
             var file = photoForCreationDto.File;
-
             var uploadResult = new ImageUploadResult();
 
             if (file.Length > 0)
@@ -126,35 +124,68 @@ namespace DatingApp.API.Controllers
         [HttpPost("{id}/setMain")]
         public async Task<IActionResult> SetMainPhoto(long userId, long id)
         {
-            if (!CheckUser(userId))
+            if (!CheckUserId(userId))
                 return Unauthorized();
 
             var user = await _userRepo.GetUser(userId);
-            if(!user.Photos.Any(i => i.Id == id))
-                return Unauthorized();
+            if (!user.Photos.Any(i => i.Id == id))
+                return BadRequest();
 
             var currentMainPhoto = user.Photos.FirstOrDefault(p => p.IsMain);
-            if(currentMainPhoto != null)
+
+            if (currentMainPhoto.Id == id)
+                return BadRequest("This is already main photo");
+
+            if (currentMainPhoto != null)
                 currentMainPhoto.IsMain = false;
 
             var newMainPhoto = user.Photos.FirstOrDefault(p => p.Id == id);
-            if(newMainPhoto != null)
+            if (newMainPhoto != null)
                 newMainPhoto.IsMain = true;
-                
-            // var photoFromRepo = await _photoRepo.GetPhoto(id);
-            // if(photoFromRepo.IsMain)
-            //     return BadRequest("This is already the main photo");
-            
-            // var currentMainPhoto = await _photoRepo.GetMainPhoto(userId);
-            // if(currentMainPhoto != null)
-            //     currentMainPhoto.IsMain = false;
 
-            // photoFromRepo.IsMain = true;
-
-            if(await _photoRepo.SaveAll())
+            if (await _photoRepo.SaveAll())
                 return NoContent();
 
             return BadRequest("Could not set photo to main");
+        }
+
+        // Delete: api/users/{userId}/photos/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePhoto(long userId, long id)
+        {
+            if (!CheckUserId(userId))
+                return Unauthorized();
+
+            var user = await _userRepo.GetUser(userId);
+            if (!await _photoRepo.Any(userId, id))
+                return BadRequest();
+
+            var photoFromRepo = await _photoRepo.GetPhoto(id);
+
+            if (photoFromRepo.IsMain)
+                return BadRequest("You cannot delete your main photo");
+
+            if (!string.IsNullOrWhiteSpace(photoFromRepo.PublicId))
+            {
+                _photoRepo.Delete(photoFromRepo);
+            }
+            else
+            {
+                var deleteParams = new DeletionParams(photoFromRepo.PublicId);
+                var resutl = _cloudinary.Destroy(deleteParams);
+
+                if (resutl.Result == "ok")
+                {
+                    _photoRepo.Delete(photoFromRepo);
+                }
+            }
+
+            if (await _photoRepo.SaveAll())
+            {
+                return Ok();
+            }
+
+            return BadRequest("Failed to delete the photo");
         }
     }
 }

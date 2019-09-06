@@ -22,6 +22,11 @@ namespace DatingApp.API.Repository
             _dbSet.Add(entity);
         }
 
+        public async Task<bool> Any(Expression<Func<T, bool>> filter)
+        {
+            return await _dbSet.AnyAsync(filter);
+        }
+
         public virtual void Delete (T entity) {
             _dbSet.Remove(entity);
         }

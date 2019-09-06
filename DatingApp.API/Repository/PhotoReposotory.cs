@@ -19,5 +19,10 @@ namespace DatingApp.API.Repository
         {
             return await Get(p => p.Id == id);
         }
+
+        public async Task<bool> Any(long userId, long id)
+        {
+            return await Any(i => i.UserId == userId && i.Id == id);
+        }
     }
 }
