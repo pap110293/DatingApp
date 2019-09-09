@@ -156,7 +156,6 @@ namespace DatingApp.API.Controllers
             if (!CheckUserId(userId))
                 return Unauthorized();
 
-            var user = await _userRepo.GetUser(userId);
             if (!await _photoRepo.Any(userId, id))
                 return BadRequest();
 
@@ -165,7 +164,7 @@ namespace DatingApp.API.Controllers
             if (photoFromRepo.IsMain)
                 return BadRequest("You cannot delete your main photo");
 
-            if (!string.IsNullOrWhiteSpace(photoFromRepo.PublicId))
+            if (string.IsNullOrWhiteSpace(photoFromRepo.PublicId))
             {
                 _photoRepo.Delete(photoFromRepo);
             }
@@ -174,7 +173,7 @@ namespace DatingApp.API.Controllers
                 var deleteParams = new DeletionParams(photoFromRepo.PublicId);
                 var resutl = _cloudinary.Destroy(deleteParams);
 
-                if (resutl.Result == "ok")
+                if (resutl.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     _photoRepo.Delete(photoFromRepo);
                 }
