@@ -19,7 +19,7 @@ export class MemeberListResolver implements Resolve<User> {
     return this.userService.getUsers().pipe(
       catchError(error => {
         this.alertify.error('problem retrieving data');
-        this.router.navigate(['/members']);
+        this.router.navigate(['/home']);
         return of(null);
       })
     );

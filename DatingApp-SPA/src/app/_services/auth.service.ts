@@ -44,9 +44,9 @@ export class AuthService {
     );
   }
 
-  register(model: any) {
+  register(user: any) {
     const requestUrl = this.baseUrl + 'register';
-    return this.http.post(requestUrl, model);
+    return this.http.post(requestUrl, user);
   }
 
   logout() {
@@ -58,6 +58,11 @@ export class AuthService {
 
   isLoggedIn() {
     const token = localStorage.getItem(environment.tokenLocalStoreKey);
+
+    if (!token) {
+      return false;
+    }
+
     return !this.jwtHelper.isTokenExpired(token);
   }
 
