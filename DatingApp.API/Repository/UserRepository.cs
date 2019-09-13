@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using DatingApp.API.Data;
+using DatingApp.API.Helpers;
 using DatingApp.API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,26 +16,17 @@ namespace DatingApp.API.Repository
 
         public UserRepository(DataContext context) : base(context)
         {
-        }
-
-        public override async Task<IEnumerable<User>> GetAll()
-        {
-            return await _dbSet.Include(i => i.Photos).ToListAsync();
-        }
-
-        public override async Task<User> Get(Expression<Func<User, bool>> filter)
-        {
-            return await _dbSet.Include(i => i.Photos).FirstOrDefaultAsync(filter);
-        }
-
-        public override async Task<IEnumerable<User>> Gets(Expression<Func<User, bool>> filter)
-        {
-            return await _dbSet.Include(i => i.Photos).Where(filter).ToListAsync();
+            _baseQuery = _baseQuery.Include(i => i.Photos);
         }
 
         public async Task<User> GetUser(long id)
         {
             return await Get(u => u.Id == id);
+        }
+
+        public async Task<PagedList<User>> GetUsers(UserParams userParams)
+        {
+            return await Gets(_baseQuery, userParams.PageNumber, userParams.PageSize);
         }
     }
 }

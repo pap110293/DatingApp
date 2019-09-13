@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using DatingApp.API.Helpers;
 using DatingApp.API.Models;
 
 namespace DatingApp.API.Repository
@@ -13,7 +15,7 @@ namespace DatingApp.API.Repository
          Task<bool> SaveAll();
          Task<IEnumerable<T>> GetAll();
          Task<T> Get(Expression<Func<T, bool>> filter);
-         Task<IEnumerable<T>> Gets(Expression<Func<T, bool>> filter);
+         Task<PagedList<T>> Gets(IQueryable<T> source, int pageNumber, int pageSize);
          Task<bool> Any(Expression<Func<T, bool>> filter);
     }
 }

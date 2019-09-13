@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using DatingApp.API.Data;
+using DatingApp.API.Helpers;
 using DatingApp.API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,10 +13,12 @@ namespace DatingApp.API.Repository
     public class BaseRepository<T> : IBaseRepository<T> where T : class {
         protected readonly DataContext _context;
         protected readonly DbSet<T> _dbSet;
+        protected IQueryable<T> _baseQuery;
 
         public BaseRepository (DataContext context){
             _context = context;
             _dbSet = _context.Set<T>();
+            _baseQuery = _dbSet;
         }
 
         public virtual void Add (T entity) {
@@ -32,16 +35,16 @@ namespace DatingApp.API.Repository
         }
 
         public virtual async Task<T> Get (Expression<System.Func<T, bool>> filter) {
-            return await _dbSet.FirstOrDefaultAsync(filter);
+            return await _baseQuery.FirstOrDefaultAsync(filter);
         }
 
         public virtual async Task<IEnumerable<T>> GetAll () {
-            return await _dbSet.ToListAsync();
+            return await _baseQuery.ToListAsync();
         }
 
-        public virtual async Task<IEnumerable<T>> Gets(Expression<Func<T, bool>> filter)
+        public virtual async Task<PagedList<T>> Gets(IQueryable<T> source, int pageNumber, int pageSize)
         {
-            return await _dbSet.Where(filter).ToListAsync();
+            return await PagedList<T>.CreateAsync(source, pageNumber, pageSize);
         }
 
         public virtual async Task<bool> SaveAll () {
