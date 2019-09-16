@@ -9,7 +9,7 @@ import { Observable, of } from 'rxjs';
 @Injectable()
 export class MemeberListResolver implements Resolve<User> {
   pageNumber = 1;
-  pageSize = 5;
+  pageSize = 6;
   constructor(
     private userService: UserService,
     private router: Router,
@@ -17,7 +17,6 @@ export class MemeberListResolver implements Resolve<User> {
   ) {}
 
   resolve(): User | Observable<User> | Promise<User> {
-    
     return this.userService.getUsers(this.pageNumber, this.pageSize).pipe(
       catchError(error => {
         this.alertify.error('problem retrieving data');

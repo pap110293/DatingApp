@@ -26,7 +26,30 @@ namespace DatingApp.API.Repository
 
         public async Task<PagedList<User>> GetUsers(UserParams userParams)
         {
-            return await Gets(_baseQuery, userParams.PageNumber, userParams.PageSize);
+            var query = _baseQuery.Where(i => i.Id != userParams.UserId);
+
+
+            if (!string.IsNullOrWhiteSpace(userParams.Gender))
+            {
+                query = query.Where(i => i.Gender == userParams.Gender);
+            }
+
+            var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1);
+            var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
+            query = query.Where(i => i.DateOfBirth >= minDob && i.DateOfBirth <= maxDob);
+
+
+            // oder by
+            switch (userParams.OrderBy)
+            {
+                case "created":
+                    query = query.OrderByDescending(i => i.Created);
+                    break;
+                default:
+                    query = query.OrderByDescending(i => i.LastActive);
+                    break;
+            }
+            return await Gets(query, userParams.PageNumber, userParams.PageSize);
         }
     }
 }

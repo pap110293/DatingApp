@@ -2,7 +2,7 @@ import { User } from './user';
 
 export interface Pagination {
   currentPage: number;
-  itemPerPage: number;
+  itemsPerPage: number;
   totalItems: number;
   totalPages: number;
 }
@@ -10,5 +10,4 @@ export interface Pagination {
 export class PaginatedResutl<T> {
   result: T;
   pagination: Pagination;
-  paginatedResutl: PaginatedResutl<User[]>;
 }
