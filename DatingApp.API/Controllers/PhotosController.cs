@@ -17,7 +17,7 @@ namespace DatingApp.API.Controllers
     [Authorize]
     [Route("api/users/{userId}/photos")]
     [ApiController]
-    public class PhotosController : ControllerBase
+    public class PhotosController : BaseController
     {
         private readonly IOptions<CloudinarySettings> _cloudinaryConfig;
         private readonly IPhotoRepository _photoRepo;
@@ -36,12 +36,6 @@ namespace DatingApp.API.Controllers
             _photoRepo = photoRepo;
             Account acc = new Account(_cloudinaryConfig.Value.CloudName, _cloudinaryConfig.Value.ApiKey, _cloudinaryConfig.Value.ApiSecret);
             _cloudinary = new Cloudinary(acc);
-        }
-
-        private bool CheckUserId(long userId)
-        {
-            var currentUserId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            return userId == currentUserId;
         }
 
         // GET: api/users/{userId}/photos/{id}

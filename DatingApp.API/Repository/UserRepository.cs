@@ -19,6 +19,11 @@ namespace DatingApp.API.Repository
             _baseQuery = _baseQuery.Include(i => i.Photos);
         }
 
+        public async Task<bool> Existed(long id)
+        {
+            return await Any(u => u.Id == id);
+        }
+
         public async Task<User> GetUser(long id)
         {
             return await Get(u => u.Id == id);
