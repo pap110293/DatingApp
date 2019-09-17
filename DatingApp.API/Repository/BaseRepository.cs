@@ -10,18 +10,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DatingApp.API.Repository
 {
-    public class BaseRepository<T> : IBaseRepository<T> where T : class {
+    public class BaseRepository<T> : IBaseRepository<T> where T : class
+    {
         protected readonly DataContext _context;
         protected readonly DbSet<T> _dbSet;
         protected IQueryable<T> _baseQuery;
 
-        public BaseRepository (DataContext context){
+        public BaseRepository(DataContext context)
+        {
             _context = context;
             _dbSet = _context.Set<T>();
             _baseQuery = _dbSet;
         }
 
-        public virtual void Add (T entity) {
+        public IQueryable<T> BaseQuery
+        {
+            get
+            {
+                return _baseQuery;
+            }
+        }
+
+        public virtual void Add(T entity)
+        {
             _dbSet.Add(entity);
         }
 
@@ -30,15 +41,18 @@ namespace DatingApp.API.Repository
             return await _dbSet.AnyAsync(filter);
         }
 
-        public virtual void Delete (T entity) {
+        public virtual void Delete(T entity)
+        {
             _dbSet.Remove(entity);
         }
 
-        public virtual async Task<T> Get (Expression<System.Func<T, bool>> filter) {
+        public virtual async Task<T> Get(Expression<System.Func<T, bool>> filter)
+        {
             return await _baseQuery.FirstOrDefaultAsync(filter);
         }
 
-        public virtual async Task<IEnumerable<T>> GetAll () {
+        public virtual async Task<IEnumerable<T>> GetAll()
+        {
             return await _baseQuery.ToListAsync();
         }
 
@@ -47,7 +61,8 @@ namespace DatingApp.API.Repository
             return await PagedList<T>.CreateAsync(source, pageNumber, pageSize);
         }
 
-        public virtual async Task<bool> SaveAll () {
+        public virtual async Task<bool> SaveAll()
+        {
             return await _context.SaveChangesAsync() > 0;
         }
     }

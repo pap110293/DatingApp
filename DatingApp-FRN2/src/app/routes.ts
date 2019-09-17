@@ -10,9 +10,10 @@ import { MemeberEditResolver } from './_resolvers/member-edit.resolver';
 import { MemeberDetailResolver } from './_resolvers/member-detail.resolver';
 import { MemeberListResolver } from './_resolvers/member-list.resolver';
 import { ReventUnsaveChanges } from './_guards/revent-insave-changes.guard';
+import { ListsResolver } from './_resolvers/lists.resolver';
 
 export const appRoutes: Routes = [
-  { path: '', component: HomeComponent, },
+  { path: '', component: HomeComponent },
   {
     path: '',
     runGuardsAndResolvers: 'always',
@@ -27,7 +28,7 @@ export const appRoutes: Routes = [
         path: 'members/edit',
         component: MemberEditComponent,
         resolve: { user: MemeberEditResolver },
-        canDeactivate: [ReventUnsaveChanges],
+        canDeactivate: [ReventUnsaveChanges]
       },
       {
         path: 'members/:id',
@@ -37,7 +38,8 @@ export const appRoutes: Routes = [
       { path: 'messages', component: MessagesComponent },
       {
         path: 'lists',
-        component: ListsComponent
+        component: ListsComponent,
+        resolve: { users: ListsResolver }
       }
     ]
   },

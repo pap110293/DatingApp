@@ -10,6 +10,7 @@ namespace DatingApp.API.Repository
 {
     public interface IBaseRepository<T> where T : class
     {
+        IQueryable<T> BaseQuery{ get; }
          void Add(T entity);
          void Delete(T entity);
          Task<bool> SaveAll();

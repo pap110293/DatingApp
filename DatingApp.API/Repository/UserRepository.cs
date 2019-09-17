@@ -13,10 +13,14 @@ namespace DatingApp.API.Repository
 {
     public class UserRepository : BaseRepository<User>, IUserRepository
     {
+        private readonly ILikeRepository _likeRepository;
 
-        public UserRepository(DataContext context) : base(context)
+        public UserRepository(DataContext context, ILikeRepository likeRepository) : base(context)
         {
             _baseQuery = _baseQuery.Include(i => i.Photos);
+            _baseQuery = _baseQuery.Include(i => i.Likers);
+            _baseQuery = _baseQuery.Include(i => i.Likees);
+            _likeRepository = likeRepository;
         }
 
         public async Task<bool> Existed(long id)
@@ -31,8 +35,13 @@ namespace DatingApp.API.Repository
 
         public async Task<PagedList<User>> GetUsers(UserParams userParams)
         {
-            var query = _baseQuery.Where(i => i.Id != userParams.UserId);
+            var query = await FilterUser(userParams);
+            return await Gets(query, userParams.PageNumber, userParams.PageSize);
+        }
 
+        private async Task<IQueryable<User>> FilterUser(UserParams userParams)
+        {
+            var query = _baseQuery.Where(i => i.Id != userParams.UserId);
 
             if (!string.IsNullOrWhiteSpace(userParams.Gender))
             {
@@ -54,7 +63,31 @@ namespace DatingApp.API.Repository
                     query = query.OrderByDescending(i => i.LastActive);
                     break;
             }
-            return await Gets(query, userParams.PageNumber, userParams.PageSize);
+
+            if (userParams.Likers)
+            {
+                var likerIds = await GetUserLikesId(userParams.UserId, userParams.Likers);
+                query = query.Where(u => likerIds.Contains(u.Id));
+            }
+
+            if (userParams.Likees)
+            {
+                var likeeIds = await GetUserLikesId(userParams.UserId, userParams.Likers);
+                query = query.Where(u => likeeIds.Contains(u.Id));
+            }
+            return query;
+        }
+
+        private async Task<IEnumerable<long>> GetUserLikesId(long id, bool likers)
+        {
+            var currentUser = await _baseQuery.FirstOrDefaultAsync(u => u.Id == id);
+
+            if (likers)
+            {
+                return currentUser.Likers.Select(i => i.LikerId);
+            }
+
+            return currentUser.Likees.Select(i => i.LikeeId);
         }
     }
 }

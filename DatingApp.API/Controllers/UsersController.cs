@@ -35,6 +35,7 @@ namespace DatingApp.API.Controllers
         {
             var currentUserId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var userFromRepo = await _userRepo.GetUser(currentUserId);
+            
             userParams.UserId = userFromRepo.Id;
 
             var pagedUsers = await _userRepo.GetUsers(userParams);
