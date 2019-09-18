@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 
 namespace DatingApp.API.Controllers
 {
+    [ServiceFilter(typeof(LogUserLastActivity))]
     [Authorize]
     [Route("api/users/{userId}/photos")]
     [ApiController]
