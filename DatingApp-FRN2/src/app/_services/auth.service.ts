@@ -74,4 +74,8 @@ export class AuthService {
       JSON.stringify(this.currentUser)
     );
   }
+
+  getCurrentUserId() {
+    return this.decodeToken.nameid;
+  }
 }

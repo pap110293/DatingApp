@@ -9,6 +9,6 @@ namespace DatingApp.API.Repository
     {
         Task<Message> GetMessage(long id);
         Task<PagedList<Message>> GetMessagesForUser(MessageParams messageParams);
-        Task<IEnumerable<Message>> GetMessagesThread(long userId, int recipientId);
+        Task<IEnumerable<Message>> GetMessagesThread(long userId, long recipientId);
     }
 }

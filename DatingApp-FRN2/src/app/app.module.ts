@@ -37,6 +37,7 @@ import { MemeberEditResolver } from './_resolvers/member-edit.resolver';
 import { MemeberListResolver } from './_resolvers/member-list.resolver';
 import { ReventUnsaveChanges } from './_guards/revent-insave-changes.guard';
 import { ListsResolver } from './_resolvers/lists.resolver';
+import { MessagesResolver } from './_resolvers/Messages.resolver';
 
 export function tokenGetter() {
   return localStorage.getItem(environment.tokenLocalStoreKey);
@@ -96,6 +97,7 @@ export class CustomHammerConfig extends HammerGestureConfig  {
     MemeberDetailResolver,
     MemeberEditResolver,
     MemeberListResolver,
+    MessagesResolver,
     ReventUnsaveChanges,
     ListsResolver
   ],

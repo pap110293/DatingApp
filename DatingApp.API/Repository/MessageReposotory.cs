@@ -12,6 +12,8 @@ namespace DatingApp.API.Repository
     {
         public MessageReposotory(DataContext context) : base(context)
         {
+            _baseQuery = _baseQuery.Include(m => m.Sender).ThenInclude(u => u.Photos)
+                .Include(m => m.Recipient).ThenInclude(u => u.Photos);
         }
 
         public async Task<Message> GetMessage(long id)
@@ -21,9 +23,7 @@ namespace DatingApp.API.Repository
 
         public async Task<PagedList<Message>> GetMessagesForUser(MessageParams messageParams)
         {
-            var query = _baseQuery.Include(m => m.Sender).ThenInclude(u => u.Photos)
-                .Include(m => m.Recipient).ThenInclude(u => u.Photos)
-                .AsQueryable();
+            var query = _baseQuery.AsQueryable();
 
             switch (messageParams.MessageContainer)
             {
@@ -42,9 +42,13 @@ namespace DatingApp.API.Repository
             return await PagedList<Message>.CreateAsync(query, messageParams.PageNumber, messageParams.PageSize);
         }
 
-        public Task<IEnumerable<Message>> GetMessagesThread(long userId, int recipientId)
+        public async Task<IEnumerable<Message>> GetMessagesThread(long userId, long recipientId)
         {
-            throw new System.NotImplementedException();
+            var query = _baseQuery.AsQueryable();
+            var messages = await query.Where(m => m.RecipientId == userId && m.SenderId == recipientId || m.RecipientId == recipientId && m.SenderId == userId)
+                            .OrderBy(i => i.MessageSent)
+                            .ToListAsync();
+            return messages;
         }
     }
 }

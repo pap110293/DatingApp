@@ -11,6 +11,7 @@ import { MemeberDetailResolver } from './_resolvers/member-detail.resolver';
 import { MemeberListResolver } from './_resolvers/member-list.resolver';
 import { ReventUnsaveChanges } from './_guards/revent-insave-changes.guard';
 import { ListsResolver } from './_resolvers/lists.resolver';
+import { MessagesResolver } from './_resolvers/Messages.resolver';
 
 export const appRoutes: Routes = [
   { path: '', component: HomeComponent },
@@ -35,7 +36,11 @@ export const appRoutes: Routes = [
         component: MemberDetailComponent,
         resolve: { user: MemeberDetailResolver }
       },
-      { path: 'messages', component: MessagesComponent },
+      {
+        path: 'messages',
+        component: MessagesComponent,
+        resolve: { messages: MessagesResolver }
+      },
       {
         path: 'lists',
         component: ListsComponent,
