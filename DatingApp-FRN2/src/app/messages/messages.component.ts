@@ -30,7 +30,7 @@ export class MessagesComponent implements OnInit {
     });
   }
 
-  loadMessage() {
+  loadMessages() {
     this.userService
       .getMessages(
         this.authService.getCurrentUserId(),
@@ -47,8 +47,28 @@ export class MessagesComponent implements OnInit {
       );
   }
 
+  deleteMessage(id: number) {
+    this.alertify.confirm(
+      'Delete Message',
+      'Are you sure you want to delete this message',
+      () => {
+        this.userService
+          .deleteMessage(id, this.authService.getCurrentUserId())
+          .subscribe(
+            () => {
+              this.loadMessages();
+              this.alertify.success('Delete message successfully');
+            },
+            error => {
+              this.alertify.error(error);
+            }
+          );
+      }
+    );
+  }
+
   pageChanged(event: any): void {
     this.pagination.currentPage = event.page;
-    this.loadMessage();
+    this.loadMessages();
   }
 }

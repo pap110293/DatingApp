@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using DatingApp.API.Data;
 using DatingApp.API.Helpers;
@@ -28,13 +30,13 @@ namespace DatingApp.API.Repository
             switch (messageParams.MessageContainer)
             {
                 case "Inbox":
-                    query = query.Where(m => m.RecipientId == messageParams.UserId);
+                    query = query.Where(m => m.RecipientId == messageParams.UserId && m.RecipientDeleted == false);
                     break;
                 case "Outbox":
-                    query = query.Where(m => m.SenderId == messageParams.UserId);
+                    query = query.Where(m => m.SenderId == messageParams.UserId && m.SenderDeleted == false);
                     break;
                 default:
-                    query = query.Where(m => m.RecipientId == messageParams.UserId && m.IsRead == false);
+                    query = query.Where(m => m.RecipientId == messageParams.UserId && m.IsRead == false && m.RecipientDeleted == false);
                     break;
             }
 
@@ -45,8 +47,14 @@ namespace DatingApp.API.Repository
         public async Task<IEnumerable<Message>> GetMessagesThread(long userId, long recipientId)
         {
             var query = _baseQuery.AsQueryable();
-            var messages = await query.Where(m => m.RecipientId == userId && m.SenderId == recipientId || m.RecipientId == recipientId && m.SenderId == userId)
-                            .OrderBy(i => i.MessageSent)
+            
+            Expression<Func<Message,bool>> filter = m => 
+                m.RecipientId == userId && m.SenderId == recipientId && m.RecipientDeleted == false 
+                || 
+                m.RecipientId == recipientId && m.SenderId == userId && m.SenderDeleted == false;
+
+            var messages = await query.Where(filter)
+                            .OrderByDescending(i => i.MessageSent)
                             .ToListAsync();
             return messages;
         }
