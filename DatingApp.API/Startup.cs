@@ -95,8 +95,13 @@ namespace DatingApp.API
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseAuthentication();
+            app.UseDefaultFiles(); // <<<< this will be on top 
+            app.UseStaticFiles(); // <<<< this will be below
 
-            app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                routes.MapSpaFallbackRoute(name: "spa-fallback", defaults: new { controller = "Fallback", action = "index" });
+            });
         }
     }
 }
