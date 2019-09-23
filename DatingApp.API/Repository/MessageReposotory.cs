@@ -14,8 +14,6 @@ namespace DatingApp.API.Repository
     {
         public MessageReposotory(DataContext context) : base(context)
         {
-            _baseQuery = _baseQuery.Include(m => m.Sender).ThenInclude(u => u.Photos)
-                .Include(m => m.Recipient).ThenInclude(u => u.Photos);
         }
 
         public async Task<Message> GetMessage(long id)

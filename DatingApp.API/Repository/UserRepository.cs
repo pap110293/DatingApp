@@ -17,9 +17,6 @@ namespace DatingApp.API.Repository
 
         public UserRepository(DataContext context, ILikeRepository likeRepository) : base(context)
         {
-            _baseQuery = _baseQuery.Include(i => i.Photos);
-            _baseQuery = _baseQuery.Include(i => i.Likers);
-            _baseQuery = _baseQuery.Include(i => i.Likees);
             _likeRepository = likeRepository;
         }
 
