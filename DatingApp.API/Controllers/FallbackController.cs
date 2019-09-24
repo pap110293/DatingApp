@@ -8,12 +8,14 @@ using AutoMapper;
 using DatingApp.API.DTOs;
 using DatingApp.API.Models;
 using DatingApp.API.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace DatingApp.API.Controllers
 {
+    [AllowAnonymous]
     public class FallbackController : Controller
     {
        public IActionResult Index(){

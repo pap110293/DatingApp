@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -7,6 +8,8 @@ using AutoMapper;
 using DatingApp.API.DTOs;
 using DatingApp.API.Models;
 using DatingApp.API.Repository;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -15,15 +18,18 @@ namespace DatingApp.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class AuthController : BaseController
     {
-        private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
-        public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper)
+        public AuthController(IConfiguration config, IMapper mapper, UserManager<User> userManager, SignInManager<User> signInManager)
         {
-            _repo = repo;
+            _signInManager = signInManager;
+            _userManager = userManager;
             _config = config;
             _mapper = mapper;
         }
@@ -31,44 +37,48 @@ namespace DatingApp.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
-            // validate the request
-
-            userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
-
-            if (await _repo.UserExists(userForRegisterDto.Username))
-            {
-                return BadRequest("Username already exists");
-            }
-
             var userToCreate = _mapper.Map<User>(userForRegisterDto);
-            var createdUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
-            var userToReturn = _mapper.Map<UserForDetailDto>(createdUser);
+            var result = await _userManager.CreateAsync(userToCreate,userForRegisterDto.Password);
+            var userToReturn = _mapper.Map<UserForDetailDto>(userToCreate);
 
-            return CreatedAtRoute("GetUser", new { id = createdUser.Id }, userToReturn);
+            if(result.Succeeded)
+            {
+                return CreatedAtRoute("GetUser", new { id = userToCreate.Id }, userToCreate);
+            }
+            return BadRequest(result.Errors);
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
-            var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
-            if (userFromRepo == null)
-                return Unauthorized();
-
-            var user = _mapper.Map<UserForListDto>(userFromRepo);
-
-            return Ok(new
+            var user = await _userManager.FindByNameAsync(userForLoginDto.Username);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, userForLoginDto.Password, false);
+            if (result.Succeeded)
             {
-                token = CreateToken(userFromRepo),
-                user
-            });
+                var userToReturn = _mapper.Map<UserForListDto>(user);
+
+                return Ok(new
+                {
+                    token = await CreateJwtToken(user),
+                    user = userToReturn
+                });
+            }
+
+            return Unauthorized();
         }
 
-        private string CreateToken(User user)
+        private async Task<string> CreateJwtToken(User user)
         {
-            var claims = new[]{
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username)
+            var claims = new List<Claim> {
+                new Claim (ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim (ClaimTypes.Name, user.UserName)
             };
+
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var securityKey = _config.GetSection("AppSettings").GetSection("Token").Value;
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey));

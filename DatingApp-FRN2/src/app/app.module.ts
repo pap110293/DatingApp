@@ -39,6 +39,7 @@ import { ReventUnsaveChanges } from './_guards/revent-insave-changes.guard';
 import { ListsResolver } from './_resolvers/lists.resolver';
 import { MemberMessagesComponent } from './Members/member-messages/member-messages.component';
 import { MessagesResolver } from './_resolvers/messages.resolver';
+import { AdminPanelComponent } from './admin/admin-panel/admin-panel.component';
 
 export function tokenGetter() {
   return localStorage.getItem(environment.tokenLocalStoreKey);
@@ -65,7 +66,8 @@ export class CustomHammerConfig extends HammerGestureConfig  {
     MemberEditComponent,
     PhotoEditorComponent,
     TimeAgoPipe,
-    MemberMessagesComponent
+    MemberMessagesComponent,
+    AdminPanelComponent
   ],
   imports: [
     BrowserModule,
