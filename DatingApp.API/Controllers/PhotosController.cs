@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using CloudinaryDotNet;
@@ -8,7 +7,6 @@ using DatingApp.API.DTOs;
 using DatingApp.API.Helpers;
 using DatingApp.API.Models;
 using DatingApp.API.Repository;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -51,7 +49,6 @@ namespace DatingApp.API.Controllers
             var photo = _mapper.Map<PhotoForReturnDto>(photoFromRepo);
             return Ok(photo);
         }
-
 
         // GET: api/users/{userId}/photos
         [HttpGet]

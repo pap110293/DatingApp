@@ -10,6 +10,7 @@ namespace DatingApp.API.Repository
         Task<User> GetUser(long id);
         Task<bool> Existed(long id);
         Task<PagedList<User>> GetUsers(UserParams userParams);
+        Task<User> GetEditUser(long id);
 
     }
 }

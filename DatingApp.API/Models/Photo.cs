@@ -15,5 +15,6 @@ namespace DatingApp.API.Models
         public virtual User User { get; set; }
         [ForeignKey("User")]
         public long UserId { get; set; }
+        public bool IsApproved { get; set; }
     }
 }

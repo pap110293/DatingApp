@@ -22,6 +22,7 @@ export class AuthGuard implements CanActivate {
       this.router.navigate(['members']);
       this.alerify.error('You are not authorised to access this area');
     }
+    
     if (this.authService.isLoggedIn()) {
       return true;
     }

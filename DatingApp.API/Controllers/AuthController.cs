@@ -43,6 +43,7 @@ namespace DatingApp.API.Controllers
 
             if(result.Succeeded)
             {
+                await _userManager.AddToRoleAsync(userToCreate, "Member");
                 return CreatedAtRoute("GetUser", new { id = userToCreate.Id }, userToCreate);
             }
             return BadRequest(result.Errors);

@@ -62,6 +62,8 @@ namespace DatingApp.API.Data
                 .WithMany(m => m.MessagesReceived)
                 .OnDelete(DeleteBehavior.Restrict);
             #endregion
+
+            builder.Entity<Photo>().HasQueryFilter(i => i.IsApproved);
         }
 
         public DbSet<Photo> Photos { get; set; }

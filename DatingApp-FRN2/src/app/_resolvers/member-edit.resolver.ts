@@ -17,7 +17,7 @@ export class MemeberEditResolver implements Resolve<User> {
   ) {}
 
   resolve(): User | Observable<User> | Promise<User> {
-    return this.userService.getUser(this.authService.decodeToken.nameid).pipe(
+    return this.userService.getEditUser(this.authService.decodeToken.nameid).pipe(
       catchError(error => {
         if (error.status === 404) {
           this.alertify.error('User not found');

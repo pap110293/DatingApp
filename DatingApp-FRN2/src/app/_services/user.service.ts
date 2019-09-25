@@ -69,6 +69,10 @@ export class UserService {
     return this.http.get<User>(this.baseUrl + 'users/' + id);
   }
 
+  getEditUser(id: number): Observable<User> {
+    return this.http.get<User>(this.baseUrl + 'users/' + id + '/edit');
+  }
+
   updateUser(id: number, user: User): Observable<User> {
     return this.http.put<User>(this.baseUrl + 'users/' + id, user);
   }

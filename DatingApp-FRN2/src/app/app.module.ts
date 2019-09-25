@@ -1,4 +1,8 @@
-import { BrowserModule, HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
+import {
+  BrowserModule,
+  HammerGestureConfig,
+  HAMMER_GESTURE_CONFIG
+} from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -13,6 +17,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TimeAgoPipe } from 'time-ago-pipe';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 import { AppComponent } from './app.component';
 import { NavComponent } from './nav/nav.component';
@@ -40,15 +45,20 @@ import { ListsResolver } from './_resolvers/lists.resolver';
 import { MemberMessagesComponent } from './Members/member-messages/member-messages.component';
 import { MessagesResolver } from './_resolvers/messages.resolver';
 import { AdminPanelComponent } from './admin/admin-panel/admin-panel.component';
+import { HasRoleDirective } from './_directive/hasRole.directive';
+import { UserManagementComponent } from './admin/user-management/user-management.component';
+import { PhotoManagementComponent } from './admin/photo-management/photo-management.component';
+import { AdminService } from './_services/admin.service';
+import { RoleModalComponent } from './admin/role-modal/role-modal.component';
 
 export function tokenGetter() {
   return localStorage.getItem(environment.tokenLocalStoreKey);
 }
 
-export class CustomHammerConfig extends HammerGestureConfig  {
+export class CustomHammerConfig extends HammerGestureConfig {
   overrides = {
-      pinch: { enable: false },
-      rotate: { enable: false }
+    pinch: { enable: false },
+    rotate: { enable: false }
   };
 }
 
@@ -67,7 +77,11 @@ export class CustomHammerConfig extends HammerGestureConfig  {
     PhotoEditorComponent,
     TimeAgoPipe,
     MemberMessagesComponent,
-    AdminPanelComponent
+    AdminPanelComponent,
+    HasRoleDirective,
+    UserManagementComponent,
+    PhotoManagementComponent,
+    RoleModalComponent
   ],
   imports: [
     BrowserModule,
@@ -75,10 +89,12 @@ export class CustomHammerConfig extends HammerGestureConfig  {
     HttpClientModule,
     FormsModule,
     FileUploadModule,
+    ModalModule.forRoot(),
     ButtonsModule.forRoot(),
     PaginationModule.forRoot(),
     BsDropdownModule.forRoot(),
     BsDatepickerModule.forRoot(),
+    TabsModule.forRoot(),
     RouterModule.forRoot(appRoutes),
     JwtModule.forRoot({
       config: {
@@ -87,9 +103,8 @@ export class CustomHammerConfig extends HammerGestureConfig  {
         blacklistedRoutes: ['localhost:5000/api/auth']
       }
     }),
-    TabsModule.forRoot(),
     NgxGalleryModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   providers: [
     { provide: HAMMER_GESTURE_CONFIG, useClass: CustomHammerConfig },
@@ -103,8 +118,10 @@ export class CustomHammerConfig extends HammerGestureConfig  {
     MemeberListResolver,
     MessagesResolver,
     ReventUnsaveChanges,
-    ListsResolver
+    ListsResolver,
+    AdminService
   ],
-  bootstrap: [AppComponent],
+  entryComponents: [RoleModalComponent],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}

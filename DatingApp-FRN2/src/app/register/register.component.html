@@ -7,12 +7,12 @@
     <input
       type="text"
       class="form-control"
-      formControlName="username"
+      formControlName="userName"
       placeholder="Username"
       [ngClass]="{
         'is-invalid':
-          registerForm.get('username').errors &&
-          registerForm.get('username').touched
+          registerForm.get('userName').errors &&
+          registerForm.get('userName').touched
       }"
     />
     <div class="invalid-feedback">Please choose a username</div>
