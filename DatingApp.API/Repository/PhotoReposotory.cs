@@ -1,6 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DatingApp.API.Data;
+using DatingApp.API.Helpers;
 using DatingApp.API.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DatingApp.API.Repository
 {
@@ -23,6 +27,12 @@ namespace DatingApp.API.Repository
         public async Task<bool> Any(long userId, long id)
         {
             return await Any(i => i.UserId == userId && i.Id == id);
+        }
+
+        public async Task<PagedList<Photo>> GetUnapprovedPhotos(PagingParams paging)
+        {
+            var query = BaseQuery.IgnoreQueryFilters().Where(i => i.IsApproved == false).OrderBy(i => i.DateAdded);
+            return await Gets(query,paging.PageNumber, paging.PageSize);
         }
     }
 }

@@ -1,7 +1,10 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using DatingApp.API.Data;
 using DatingApp.API.DTOs;
+using DatingApp.API.Helpers;
 using DatingApp.API.Models;
 using DatingApp.API.Repository;
 using Microsoft.AspNetCore.Authorization;
@@ -17,8 +20,15 @@ namespace DatingApp.API.Controllers {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
         private readonly IPhotoRepository _photoRepository;
-        public AdminController (DataContext context, UserManager<User> userManager, RoleManager<Role> roleManager, IPhotoRepository photoRepository) {
+        private readonly IMapper _mapper;
+
+        public AdminController (DataContext context, 
+                                UserManager<User> userManager, 
+                                RoleManager<Role> roleManager, 
+                                IPhotoRepository photoRepository,
+                                IMapper mapper) {
             _photoRepository = photoRepository;
+            _mapper = mapper;
             _roleManager = roleManager;
             _userManager = userManager;
             _context = context;
@@ -67,6 +77,18 @@ namespace DatingApp.API.Controllers {
             photo.IsApproved = true;
             await _photoRepository.SaveAll();
             return NoContent();
+        }
+
+        [Authorize (Policy = "RequireAdministrator")]
+        [HttpGet ("photos")]
+        public async Task<IActionResult> GetUnapprovedPhoto ([FromQuery]PagingParams pagingParams) 
+        {
+            var pagedPhoto = await _photoRepository.GetUnapprovedPhotos(pagingParams);
+            var photosToReturn = _mapper.Map<IEnumerable<PhotoForDetailDto>>(pagedPhoto);
+
+            Response.AddPagination(pagedPhoto.CurrentPage, pagedPhoto.PageSize, pagedPhoto.TotalCount, pagedPhoto.TotalPages);
+
+            return Ok(photosToReturn);
         }
     }
 }

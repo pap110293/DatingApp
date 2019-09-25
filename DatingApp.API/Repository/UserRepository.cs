@@ -32,7 +32,9 @@ namespace DatingApp.API.Repository
 
         public async Task<User> GetEditUser(long id)
         {
-            return await _baseQuery.IgnoreQueryFilters().FirstOrDefaultAsync(i => i.Id == id);
+            return await _baseQuery.IgnoreQueryFilters()
+                                .Include(i => i.Photos)
+                                .FirstOrDefaultAsync(i => i.Id == id);
         }
 
         public async Task<PagedList<User>> GetUsers(UserParams userParams)
