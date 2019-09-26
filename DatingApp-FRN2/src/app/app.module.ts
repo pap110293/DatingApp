@@ -81,7 +81,7 @@ export class CustomHammerConfig extends HammerGestureConfig {
     HasRoleDirective,
     UserManagementComponent,
     PhotoManagementComponent,
-    RoleModalComponent
+    RoleModalComponent,
   ],
   imports: [
     BrowserModule,

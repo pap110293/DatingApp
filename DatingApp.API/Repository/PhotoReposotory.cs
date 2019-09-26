@@ -34,5 +34,11 @@ namespace DatingApp.API.Repository
             var query = BaseQuery.IgnoreQueryFilters().Where(i => i.IsApproved == false).OrderBy(i => i.DateAdded);
             return await Gets(query,paging.PageNumber, paging.PageSize);
         }
+
+        public async Task<Photo> GetUnapprovedPhoto(long id)
+        {
+            var query = BaseQuery.IgnoreQueryFilters();
+            return await query.FirstOrDefaultAsync(i => i.Id == id);
+        }
     }
 }

@@ -1,0 +1,15 @@
+.card-img-wrapper {
+    overflow: hidden;
+    position: relative;
+}
+
+img.img-thumbnail {
+    max-height: 100%;
+    min-width: 100% !important;
+    margin-bottom: 3px;
+}
+
+button {
+    font-size: 12px;
+    width: 47%;
+}

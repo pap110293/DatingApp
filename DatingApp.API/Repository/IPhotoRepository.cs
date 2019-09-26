@@ -10,5 +10,6 @@ namespace DatingApp.API.Repository
         Task<Photo> GetMainPhoto(long userId);
         Task<bool> Any(long userId, long id);
         Task<PagedList<Photo>> GetUnapprovedPhotos(PagingParams paging);
+        Task<Photo> GetUnapprovedPhoto(long id);
     }
 }

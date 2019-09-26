@@ -80,7 +80,7 @@ namespace DatingApp.API
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("RequireAdministrator", policy => policy.RequireRole("Admin"));
-                options.AddPolicy("RequireManager", policy => policy.RequireRole("Admin, Moderrator"));
+                options.AddPolicy("RequireManager", policy => policy.RequireRole("Admin", "Moderator"));
                 options.AddPolicy("VipOnliy", policy => policy.RequireRole("VIP"));
             });
 

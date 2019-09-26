@@ -11,3 +11,18 @@ input[type=file] {
 .nv-file-over {
     border: dotted 3px red;
 }
+
+.card-img-wrapper {
+    overflow: hidden;
+    position: relative;
+}
+
+.card-img-wrapper > .o-4 {
+    opacity: 0.4;
+}
+
+.card-img-wrapper .wait-for-approve-mess {
+    width: 100%;
+    position: absolute;
+    bottom: 30%;
+}

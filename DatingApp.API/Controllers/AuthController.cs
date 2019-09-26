@@ -70,18 +70,10 @@ namespace DatingApp.API.Controllers
 
         private async Task<string> CreateJwtToken(User user)
         {
-            var claims = new List<Claim> {
-                new Claim (ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim (ClaimTypes.Name, user.UserName)
-            };
-
-            var roles = await _userManager.GetRolesAsync(user);
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
+            var claims = await CreateClaims(user);
 
             var securityKey = _config.GetSection("AppSettings").GetSection("Token").Value;
+            
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
@@ -98,6 +90,22 @@ namespace DatingApp.API.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
+        }
+
+        private async Task<IEnumerable<Claim>> CreateClaims(User user)
+        {
+            var claims = new List<Claim> {
+                new Claim (ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim (ClaimTypes.Name, user.UserName)
+            };
+
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            return claims;
         }
     }
 }
