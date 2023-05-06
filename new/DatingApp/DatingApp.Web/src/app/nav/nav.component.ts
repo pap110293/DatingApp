@@ -18,11 +18,9 @@ export class NavComponent implements OnInit {
     this.currentUser$ = this.accountService.currentUser$;
   }
 
+
   login() {
     this.accountService.login(this.model).subscribe({
-      next: response => {
-        console.log(response);
-      },
       error: error => console.log(error)
     });
   }
