@@ -54,14 +54,14 @@ public class AccountController : BaseApiController
     {
         var user = await _context.AppUsers.FirstOrDefaultAsync(u => u.UserName == loginDto.Username.ToLower());
 
-        if (user is null) return Unauthorized();
+        if (user is null) return Unauthorized("Username or Password is invalid");
 
         using var hmac = new HMACSHA512(user.PasswordSalt);
         var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
         
         if (computedHash.Where((t, i) => t != user.PasswordHash[i]).Any())
         {
-            return Unauthorized("Invalid password");
+            return Unauthorized("Username or Password is invalid");
         }
 
         var userDto = new UserDto
